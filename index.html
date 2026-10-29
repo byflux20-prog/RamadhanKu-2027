@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RamadhanKu 2027 (AI Ultra Fixed)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #2979ff; 
+            --bg: #f5f7fa; 
+            --card: #ffffff; 
+            --text: #333; 
+            --gold: #ffd700;
+            --header-bg: linear-gradient(135deg, #2979ff, #1565c0);
+        }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 0.5s ease; }
+
+        header { background: var(--header-bg); padding: 16px 20px 18px; border-radius: 0 0 30px 30px; color: white; box-shadow: 0 5px 20px rgba(41,121,255,0.3); flex-shrink: 0; z-index: 10; position: relative; overflow: hidden; transition: background 0.5s ease; }
+        header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%); pointer-events: none; }
+        
+        .head-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; position: relative; z-index: 2; }
+        .app-name { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
+        
+        .badge { font-size: 10px; background: linear-gradient(45deg, #ffd700, #ffca28); color: #333; padding: 5px 12px; border-radius: 20px; font-weight: 800; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4); display: flex; align-items: center; gap: 5px; }
+        
+        .clock-card { background: rgba(255,255,255,0.18); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.35); position: relative; z-index: 2; }
+        .time { font-size: 34px; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.12); line-height: 1; }
+        .date { font-size: 11px; text-align: right; line-height: 1.35; font-weight: 600; }
+
+        main { flex: 1; overflow-y: auto; padding: 18px 20px 110px; margin-top: -15px; position: relative; z-index: 5; }
+        
+        .card { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); border: 1px solid #fff; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .card:active { transform: scale(0.99); }
+        .card h3 { margin: 0 0 14px; font-size: 16px; color: #333; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .card h3 i { color: var(--primary); font-size: 18px; background: #e3f2fd; padding: 8px; border-radius: 12px; }
+
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { flex: 1; padding: 12px 14px; border: 2px solid #f0f2f5; border-radius: 14px; outline: none; transition: 0.3s; background: #f9f9f9; font-size: 14px; }
+        input:focus { border-color: var(--primary); background: #fff; }
+        
+        .btn-icon { width: 48px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-block { width: 100%; padding: 13px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(41,121,255,0.22); font-size: 14px; }
+        .btn-outline { width: 100%; padding: 12px; background: transparent; border: 2px solid var(--primary); color: var(--primary); border-radius: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+
+        .list-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .chk { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); cursor: pointer; }
+        .item-text { flex: 1; font-size: 14px; color: #444; font-weight: 500; }
+        .done { text-decoration: line-through; color: #ccc; }
+        .del-btn { color: #ff5252; background: none; border: none; padding: 5px; cursor: pointer; font-size: 16px; }
+
+        .ai-box { background: #e3f2fd; padding: 16px; border-radius: 14px; font-size: 13.5px; line-height: 1.6; margin-top: 12px; border-left: 5px solid var(--primary); display: none; color: #1565c0; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .mood-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .emoji-btn { font-size: 26px; background: #f4f6f8; border: none; padding: 12px 0; border-radius: 16px; cursor: pointer; transition: 0.15s; }
+        .emoji-btn:active { background: #e3f2fd; transform: scale(0.93); }
+
+        /* SWITCH TOGGLE IOS STYLE */
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #2e7d32; }
+        input:checked + .slider-blue { background-color: #1565c0; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); height: 80px; display: flex; border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 100; justify-content: space-around; align-items: center; border-top: 1px solid #fff; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; color: #b0bec5; cursor: pointer; padding-bottom: 5px; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; }
+        .nav-item span { font-size: 11px; font-weight: 800; }
+
+        .hidden { display: none !important; }
+        .fab { position: fixed; bottom: 95px; right: 20px; width: 55px; height: 55px; background: linear-gradient(45deg, #ffd700, #ffca28); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #333; font-size: 22px; box-shadow: 0 5px 15px rgba(255,202,40,0.4); cursor: pointer; z-index: 90; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.9); }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-box { background: white; width: 85%; max-width: 350px; padding: 24px; border-radius: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
+        .chip { display: inline-block; padding: 6px 12px; background: #fff8e1; color: #f57f17; border-radius: 14px; font-size: 12px; margin: 3px; border: 1px solid #ffe0b2; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<header id="main-header">
+    <div class="head-top">
+        <div class="app-name">RamadhanKu 2027</div>
+        <div class="badge"><i class="fas fa-crown"></i> AI ULTRA</div>
+    </div>
+    <div class="clock-card">
+        <div class="time" id="clock">00.00</div>
+        <div class="date" id="date">...</div>
+    </div>
+</header>
+
+<main id="tab-kegiatan">
+    <!-- MOOD BOOSTER -->
+    <div class="card">
+        <h3><i class="fas fa-smile-beam"></i> Mood Booster</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:12px">Gimana perasaan Nuriz sekarang?</p>
+        <div class="mood-grid">
+            <button class="emoji-btn" onclick="genMood('senang')">🤩</button>
+            <button class="emoji-btn" onclick="genMood('ngantuk')">😴</button>
+            <button class="emoji-btn" onclick="genMood('lapar')">🤤</button>
+            <button class="emoji-btn" onclick="genMood('bosan')">🫠</button>
+        </div>
+        <div id="res-mood" class="ai-box"></div>
+    </div>
+
+    <!-- BANK DOA HARIAN SHAHIH -->
+    <div class="card">
+        <h3><i class="fas fa-hands-praying"></i> Bank Doa Harian</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:12px">Doa shahih dari Al-Qur'an & Sunnah:</p>
+        <button class="btn-block" onclick="genDoaAcak()"><i class="fas fa-shuffle"></i> Ambil Doa Acak Hari Ini</button>
+        <div id="res-doa" class="ai-box" style="background:#e8f5e9; border-color:#2e7d32; color:#1b5e20;"></div>
+    </div>
+
+    <!-- NGABUBURIT LIST -->
+    <div class="card">
+        <h3><i class="fas fa-tasks"></i> Ngabuburit List</h3>
+        <div class="input-row">
+            <input type="text" id="jajanInput" placeholder="Beli takjil apa?">
+            <button class="btn-icon" onclick="addJajan()"><i class="fas fa-plus"></i></button>
+        </div>
+        <div id="jajanList"></div>
+    </div>
+
+    <!-- REFLEKSI MALAM -->
+    <div class="card" id="card-refleksi">
+        <h3><i class="fas fa-moon"></i> Refleksi Malam</h3>
+        <div id="refleksi-locked" style="text-align:center; padding:10px; color:#888;">
+            <i class="fas fa-lock" style="font-size:18px; margin-bottom:4px; display:block;"></i>
+            <span style="font-size:12px">Terbuka otomatis setelah Tarawih (<span id="lbl-selesai-tarawih">--:--</span>)</span>
+        </div>
+        <button id="btn-refleksi" class="btn-outline" onclick="genRefleksi()" style="display:none; width:100%; border-color:#ffd700; color:#f57f17; background:#fff8e1;">✨ Buat Refleksi Spesial</button>
+        <div id="res-refleksi" class="ai-box" style="background:#fff8e1; border-color:#ffd700; color:#5d4037;"></div>
+    </div>
+</main>
+
+<main id="tab-ibadah" class="hidden">
+    <!-- KULKAS PINTAR SAHUR -->
+    <div class="card">
+        <h3><i class="fas fa-utensils"></i> Kulkas Pintar (Sahur)</h3>
+        
+        <button class="btn-block" onclick="genSaranSahur()">🎲 Saran Menu Sahur</button>
+        <div id="res-saran" class="ai-box" style="margin-bottom:15px; border-color:#ffca28; background:#fff8e1; color:#f57f17"></div>
+
+        <p style="font-size:12px; font-weight:bold; margin-bottom:5px">Menu Andalan Nuriz:</p>
+        <div class="input-row">
+            <input type="text" id="menuBaru" placeholder="Ex: Tahu Bakso">
+            <button class="btn-icon" onclick="tambahMenu()"><i class="fas fa-save"></i></button>
+        </div>
+        <div id="daftarMenuUser" style="margin-bottom:15px"></div>
+
+        <p style="font-size:12px; font-weight:bold; margin-bottom:5px">Cek Gizi Makananmu:</p>
+        <div class="input-row">
+            <input type="text" id="cekSahurInput" placeholder="Makan apa tadi?">
+            <button class="btn-icon" onclick="cekGizi(document.getElementById('cekSahurInput').value)"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="res-gizi" class="ai-box"></div>
+    </div>
+
+    <!-- TADARUS (LENGKAP DENGAN LATIN) -->
+    <div class="card">
+        <h3><i class="fas fa-book-open"></i> Lapor Tadarus</h3>
+        <div class="input-row">
+            <input type="text" id="tadarusInput" placeholder="Surah & Ayat?">
+            <button class="btn-icon" onclick="genTadarus(document.getElementById('tadarusInput').value)"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div id="res-tadarus" class="ai-box"></div>
+    </div>
+
+    <!-- JADWAL -->
+    <div class="card">
+        <h3><i class="fas fa-clock"></i> Jadwal Ibadah</h3>
+        <div class="list-item"><span>Sahur</span><b style="margin-left:auto" id="d-sahur">03:30</b></div>
+        <div class="list-item"><span>Buka (Saran Air Kelapa)</span><b style="margin-left:auto; color:var(--primary)" id="d-buka">17:50</b></div>
+        <div class="list-item"><span>Mulai Tarawih</span><b style="margin-left:auto" id="d-tarawih">19:00</b></div>
+        <div class="list-item" style="border:none"><span>Selesai Tarawih</span><b style="margin-left:auto; color:#f57f17" id="d-selesai">20:00</b></div>
+    </div>
+</main>
+
+<div class="fab" onclick="document.getElementById('modal').style.display='flex'"><i class="fas fa-cog"></i></div>
+
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h3 style="margin-bottom:18px; text-align:center;">Pengaturan & Mode</h3>
+        
+        <div style="background:#f4fbf7; padding:14px; border-radius:18px; margin-bottom:14px; border:1px solid #c8e6c9;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold; color:#2e7d32; font-size:14px;"><i class="fas fa-leaf"></i> Mode Diet Sehat</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-diet" onchange="toggleDietMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p style="font-size:11px; color:#4caf50; margin:8px 0 0; line-height:1.4;">Background hijau, max 2 takjil, menu sehat tanpa sayur + tracker kalori/natrium!</p>
+        </div>
+
+        <div style="background:#f0f7ff; padding:14px; border-radius:18px; margin-bottom:16px; border:1px solid #bbdefb;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold; color:#1565c0; font-size:14px;"><i class="fas fa-palette"></i> Mode Adaptif Waktu</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-adaptif" onchange="toggleAdaptifMode()">
+                    <span class="slider slider-blue"></span>
+                </label>
+            </div>
+            <p style="font-size:11px; color:#2196f3; margin:8px 0 0; line-height:1.4;">Warna tema otomatis berubah mengikuti jam HP kamu (Sahur, Pagi, Sore, Malam).</p>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #eee; margin:16px 0;">
+
+        <h4 style="margin:0 0 10px; font-size:14px; color:#444;">Atur Jadwal Pribadi</h4>
+        <label style="font-size:11px; font-weight:bold; color:#666;">Jam Sahur</label>
+        <input type="time" id="set-sahur" style="width:100%; margin-bottom:8px">
+        
+        <label style="font-size:11px; font-weight:bold; color:#666;">Jam Berbuka</label>
+        <input type="time" id="set-buka" style="width:100%; margin-bottom:8px">
+        
+        <label style="font-size:11px; font-weight:bold; color:#666;">Mulai Tarawih</label>
+        <input type="time" id="set-tarawih" style="width:100%; margin-bottom:8px">
+        
+        <label style="font-size:11px; font-weight:bold; color:#f57f17;">Selesai Tarawih (Buka Refleksi)</label>
+        <input type="time" id="set-selesai" style="width:100%; margin-bottom:16px; border:2px solid #ffd700; background:#fff8e1;">
+        
+        <button class="btn-block" onclick="saveJadwal()">Simpan Perubahan</button>
+        <button class="btn-outline" onclick="document.getElementById('modal').style.display='none'" style="border:none; color:#888">Tutup</button>
+    </div>
+</div>
+
+<nav>
+    <div class="nav-item active" onclick="switchTab('kegiatan', this)"><i class="fas fa-star"></i><span>Kegiatan</span></div>
+    <div class="nav-item" onclick="switchTab('ibadah', this)"><i class="fas fa-mosque"></i><span>Ibadahku</span></div>
+</nav>
+
+<script>
+    // ================= REFLEKSI MALAM UNIK & OTENTIK =================
+    const REFLEKSI_DB = [
+        "Hari ini kamu hebat! Udah nahan lapar & emosi seharian. Istirahatlah, besok berjuang lagi! 🌙 <br><br><b>💡 Pesan Pendukung:</b> Semoga lelahmu hari ini berbuah surga, ya Nuriz!",
+        "Alhamdulillah, satu hari lagi terlewati dengan indah. Lelahmu hari ini insyaAllah jadi pahala. 🤲 <br><br><b>💡 Pesan Pendukung:</b> Tenang, kamu hebat udah bertahan sejauh ini. Istirahat yang cukup ya!",
+        "Bangga banget sama kamu, Nuriz! Ibadah dapet, hobi juga jalan. Definisi produktif berkah. ✨ <br><br><b>💡 Pesan Pendukung:</b> Pertahankan ritme positif ini, kamu keren banget!",
+        "Tutup hari ini dengan senyuman. Kamu udah ngelakuin yang terbaik. Allah Maha Tahu usahamu. ❤️ <br><br><b>💡 Pesan Pendukung:</b> Jangan lupa senyum sebelum tidur, hari esok menanti dengan penuh berkah.",
+        "Jangan lupa bersyukur bisa buka puasa enak tadi. Tidur yang nyenyak ya, pejuang subuh! 🛌 <br><br><b>💡 Pesan Pendukung:</b> Pejuang subuh sejati pasti bangun dengan semangat baru besok!",
+        "Meskipun capek, tapi hati tenang kan? Itu nikmatnya Ramadhan. Good job hari ini! 👍 <br><br><b>💡 Pesan Pendukung:</b> Ketenangan hati adalah rezeki termahal hari ini.",
+        "Setiap sujudmu hari ini dihitung kebaikan. Tetap semangat, perjalanan masih panjang! 🚀 <br><br><b>💡 Pesan Pendukung:</b> Terus langkahkan kaki di jalan kebaikan, Allah bersama pejuang sabar.",
+        "Hari ini mungkin berat, tapi kamu lebih kuat. Buktinya kamu berhasil sampai Tarawih! 💪 <br><br><b>💡 Pesan Pendukung:</b> Kamu jauh lebih tangguh dari yang kamu bayangkan!",
+        "Novel NO LEADER nambah ide gak hari ini? Kalau belum, mungkin besok inspirasinya datang. Semangat! ✍️ <br><br><b>💡 Pesan Pendukung:</b> Ide cemerlang bakal mengalir pas pikiran udah fresh.",
+        "Seneng banget liat kamu konsisten. Semoga Ramadhan tahun ini jadi yang terbaik buatmu. 🌟 <br><br><b>💡 Pesan Pendukung:</b> Konsistensimu bakal bawa hasil luar biasa.",
+        "Udah minum air putih yang cukup? Jaga kesehatan ya, biar besok sahur tetep on fire! 🔥 <br><br><b>💡 Pesan Pendukung:</b> Jangan skip hidrasi ya biar besok nggak lemas.",
+        "Maafkan kesalahan diri sendiri hari ini. Besok adalah lembaran baru. Kamu pasti bisa lebih baik. 🍃 <br><br><b>💡 Pesan Pendukung:</b> Setiap hari adalah kesempatan baru untuk jadi versi terbaik.",
+        "Gimana tarawihnya? Semoga rasa kantuk tadi diganti pahala berlipat ganda ya! 😂 <br><br><b>💡 Pesan Pendukung:</b> Melawan kantuk demi tarawih itu level sabarnya tinggi lho!",
+        "Jangan insecure sama ibadah orang lain. Fokus sama progress kamu sendiri. Kamu keren kok! 😎 <br><br><b>💡 Pesan Pendukung:</b> Lari masing-masing aja, fokus ke garis finish versimu sendiri.",
+        "Rehat dulu dari coding dan nulis. Otak juga butuh istirahat biar besok ide ngalir deres. 🧠 <br><br><b>💡 Pesan Pendukung:</b> Matikan layar handphone, saatnya recharge energi tubuh.",
+        "Terima kasih sudah bertahan hari ini, Nuriz. Kamu anak hebat, kakak yang baik, dan hamba yang taat. 🤗 <br><br><b>💡 Pesan Pendukung:</b> Emak dan keluarga pasti bangga banget sama kamu.",
+        "Langit malam ini indah ya? Seindah perjuanganmu menahan hawa nafsu seharian tadi. 🌌 <br><br><b>💡 Pesan Pendukung:</b> Nikmati indahnya malam ciptaan-Nya dengan hati damai.",
+        "Ingat cita-cita masuk IPDN atau jadi Developer? Dua-duanya butuh disiplin, dan puasa melatih itu. 🎓 <br><br><b>💡 Pesan Pendukung:</b> Disiplin hari ini adalah kunci sukses masa depanmu.",
+        "Kalau hari ini ada yang bikin kesel, ikhlaskan aja. Biar tidurmu nyenyak dan hati lapang. 🕊️ <br><br><b>💡 Pesan Pendukung:</b> Hati yang bersih bikin tidur makin lelap.",
+        "Sosis Kenzler tadi enak kan? Nikmat sekecil itu aja patut disyukuri lho. Alhamdulillah. 🌭 <br><br><b>💡 Pesan Pendukung:</b> Syukur atas hal kecil mendatangkan nikmat yang lebih besar.",
+        "Sholat 5 waktu aman? Alhamdulillah. Itu pondasi utama, yang lain bonus. Pertahankan! 🕌 <br><br><b>💡 Pesan Pendukung:</b> Tiang agama sudah dijaga dengan baik hari ini.",
+        "Tadarusmu hari ini didengar malaikat lho. MasyaAllah, adem banget pasti suasananya. 📖 <br><br><b>💡 Pesan Pendukung:</b> Suara Al-Qur'anmu jadi penyejuk di rumah.",
+        "Besok jangan lupa bangun sahur lebih awal, biar makannya santai gak buru-buru. ⏰ <br><br><b>💡 Pesan Pendukung:</b> Setel alarm dari sekarang biar gak kesiangan ya!",
+        "Lelah fisik itu sementara, pahala sabar itu selamanya. Tidur gih, charge energimu! 🔋 <br><br><b>💡 Pesan Pendukung:</b> Istirahat total biar besok subuh bugar kembali.",
+        "Apapun yang terjadi hari ini, kamu sudah menang melawan dirimu sendiri. Selamat istirahat! 🏆 <br><br><b>💡 Pesan Pendukung:</b> Kamu adalah pemenang sejati hari ini. Good night!",
+        "Setiap rasa lelah di jalan kebaikan akan menjadi penyejuk hati saat sahur nanti. 💫 <br><br><b>💡 Pesan Pendukung:</b> Bersabarlah, pahala kebaikan sedang dipersiapkan untukmu.",
+        "Istirahatlah dengan niat menjaga stamina ibadah besok pagi. Tidurmu pun bernilai pahala. 😴 <br><br><b>💡 Pesan Pendukung:</b> Tidur nyenyak ya, jaga kesehatan fisikmu.",
+        "Teruslah berbuat baik sekecil apapun, karena kita tidak tahu amalan mana yang membawa ke surga. 🍃 <br><br><b>💡 Pesan Pendukung:</b> Setiap kebaikan kecilmmu sangat berharga.",
+        "Waktu bernafas di bulan Ramadhan adalah tasbih. Syukuri nikmat kesehatan malam ini. 🤲 <br><br><b>💡 Pesan Pendukung:</b> Alhamdulillah atas nafas dan kesehatan hingga detik ini.",
+        "Semoga setiap untaian doa yang kamu bisikkan ke bumi didengar oleh para penghuni langit. 🌌 <br><br><b>💡 Pesan Pendukung:</b> Doamu pasti diijabah di waktu yang paling tepat.",
+        "Lupakan kekhilafan hari ini, fokus pada perbaikan diri besok subuh. Kamu terus berkembang! ✨ <br><br><b>💡 Pesan Pendukung:</b> Kegagalan hari ini adalah pelajaran berharga buat besok.",
+        "Ketenangan hati hadir dari keikhlasan menerima setiap takdir-Nya dengan senyuman. 🕊️ <br><br><b>💡 Pesan Pendukung:</b> Lapangkan dada, percaya rencana Allah pasti terbaik.",
+        "Jaga kesehatan bibir dan tubuhmu. Fisik yang kuat bikin ibadah jadi makin khusyuk. 💧 <br><br><b>💡 Pesan Pendukung:</b> Oleskan lip balm dan minum air yang cukup sebelum tidur ya!",
+        "Ramadhan adalah madrasah kedisiplinan. Hari ini kamu sudah lulus satu tahap lagi! 🎓 <br><br><b>💡 Pesan Pendukung:</b> Disiplinmu semakin teruji dan makin matang.",
+        "Tetaplah rendah hati dan penuh rasa kasih sayang kepada Emak dan keluarga di rumah. ❤️ <br><br><b>💡 Pesan Pendukung:</b> Senyumanmu membawa kebahagiaan untuk orang rumah."
+    ];
+
+    // ================= BANK DOA HARIAN SHAHIH =================
+    const DOA_DB = [
+        { judul: "Doa Keselamatan & Kesehatan Fisik", arab: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي", latin: "Allahumma 'afini fi badani, Allahumma 'afini fi sam'i, Allahumma 'afini fi bashari", arti: "Ya Allah, sehatkanlah badanku, sehatkanlah pendengaranku, dan sehatkanlah penglihatanku." },
+        { judul: "Doa Ampunan untuk Nenek & Orang Tua", arab: "رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ", latin: "Rabbannaghfir li wa liwalidayya wa lil-mu'minina yauma yaqumul-hisab", arti: "Ya Tuhan kami, berilah ampunan kepadaku, kedua orang tuaku, dan orang-orang beriman pada hari hisab." },
+        { judul: "Doa Kelancaran Cita-Cita & Kemudahan", arab: "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي", latin: "Rabbi ishrah li sadri wa yassir li amri", arti: "Ya Tuhanku, lapangkanlah untukku dadaku, dan mudahkanlah untukku urusanku." },
+        { judul: "Doa Berbuka Puasa Shahih", arab: "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ", latin: "Zhahabazh-zhama'u wabtallatil-'uruqu wa tsabatal-ajru in sya'allah", arti: "Telah hilang rasa haus, urat-urat telah basah, dan pahala telah tetap, insya Allah." },
+        { judul: "Doa Mohon Ilmu Bermanfaat & Rezeki", arab: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا", latin: "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan thayyiban, wa 'amalan mutaqabbalan", arti: "Ya Allah, aku mohon ilmu yang bermanfaat, rezeki yang baik, dan amal yang diterima." },
+        
+        {
+            judul: "Doa Kebaikan Dunia dan Akhirat (QS. Al-Baqarah: 201)",
+            arab: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+            latin: "Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina 'adzaban-nar",
+            arti: "Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, serta lindungilah kami dari azab neraka."
+        },
+        {
+            judul: "Doa Memohon Ampunan (QS. Al-Baqarah: 286)",
+            arab: "رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا",
+            latin: "Rabbana la tu'akhidzna in nasina aw akhtha'na",
+            arti: "Ya Tuhan kami, janganlah Engkau hukum kami jika kami lupa atau melakukan kesalahan."
+        },
+        {
+            judul: "Doa Memohon Beban yang Ringan (QS. Al-Baqarah: 286)",
+            arab: "رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا",
+            latin: "Rabbana wa la tahmil 'alaina ishran kama hamaltahu 'alalladzina min qablina",
+            arti: "Ya Tuhan kami, janganlah Engkau bebankan kepada kami beban berat sebagaimana yang Engkau bebankan kepada orang-orang sebelum kami."
+        },
+        {
+            judul: "Doa Memohon Maaf dan Ampunan (QS. Al-Baqarah: 286)",
+            arab: "وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا",
+            latin: "Wa'fu 'anna, waghfir lana, warhamna",
+            arti: "Maafkanlah kami, ampunilah kami, dan rahmatilah kami."
+        },
+        {
+            judul: "Doa Memohon Pertolongan (QS. Al-Baqarah: 286)",
+            arab: "أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+            latin: "Anta maulana fanshurna 'alal-qaumil-kafirin",
+            arti: "Engkaulah pelindung kami, maka tolonglah kami terhadap kaum kafir."
+        },
+        {
+            judul: "Doa Memohon Kesabaran dan Keteguhan (QS. Al-Baqarah: 250)",
+            arab: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+            latin: "Rabbana afrigh 'alaina shabran wa tsabbit aqdamana wanshurna 'alal-qaumil-kafirin",
+            arti: "Ya Tuhan kami, limpahkanlah kesabaran kepada kami, teguhkanlah pendirian kami, dan tolonglah kami."
+        },
+        {
+            judul: "Doa Taubat Nabi Adam dan Hawa (QS. Al-A'raf: 23)",
+            arab: "رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ",
+            latin: "Rabbana zhalamna anfusana wa il lam taghfir lana wa tarhamna lanakunanna minal-khasirin",
+            arti: "Ya Tuhan kami, kami telah menzalimi diri kami sendiri. Jika Engkau tidak mengampuni dan merahmati kami, niscaya kami termasuk orang-orang yang rugi."
+        },
+        {
+            judul: "Doa Agar Tidak Menjadi Ujian bagi Orang Zalim (QS. Al-A'raf: 47)",
+            arab: "رَبَّنَا لَا تَجْعَلْنَا مَعَ الْقَوْمِ الظَّالِمِينَ",
+            latin: "Rabbana la taj'alna ma'al-qaumizh-zhalimin",
+            arti: "Ya Tuhan kami, janganlah Engkau tempatkan kami bersama orang-orang zalim."
+        },
+        {
+            judul: "Doa Memohon Kesabaran dalam Ujian (QS. Al-A'raf: 126)",
+            arab: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ",
+            latin: "Rabbana afrigh 'alaina shabran wa tawaffana muslimin",
+            arti: "Ya Tuhan kami, limpahkanlah kesabaran kepada kami dan wafatkanlah kami dalam keadaan berserah diri kepada-Mu."
+        },
+        {
+            judul: "Doa Agar Tidak Menjadi Sasaran Kezaliman (QS. Yunus: 85)",
+            arab: "رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِلْقَوْمِ الظَّالِمِينَ",
+            latin: "Rabbana la taj'alna fitnatan lil-qaumizh-zhalimin",
+            arti: "Ya Tuhan kami, janganlah Engkau jadikan kami sasaran fitnah bagi orang-orang zalim."
+        },
+        {
+            judul: "Doa Memohon Keselamatan dari Kaum Zalim (QS. Yunus: 86)",
+            arab: "وَنَجِّنَا بِرَحْمَتِكَ مِنَ الْقَوْمِ الْكَافِرِينَ",
+            latin: "Wa najjina birahmatika minal-qaumil-kafirin",
+            arti: "Selamatkanlah kami dengan rahmat-Mu dari kaum yang kafir."
+        },
+        {
+            judul: "Doa untuk Keturunan yang Menjaga Salat (QS. Ibrahim: 40)",
+            arab: "رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِنْ ذُرِّيَّتِي رَبَّنَا وَتَقَبَّلْ دُعَاءِ",
+            latin: "Rabbij'alni muqimash-shalati wa min dzurriyyati rabbana wa taqabbal du'a",
+            arti: "Ya Tuhanku, jadikanlah aku dan keturunanku orang-orang yang tetap mendirikan salat. Ya Tuhan kami, terimalah doaku."
+        },
+        {
+            judul: "Doa Ampunan untuk Diri dan Orang Tua (QS. Ibrahim: 41)",
+            arab: "رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ",
+            latin: "Rabbanaghfir li wa liwalidayya wa lil-mu'minina yauma yaqumul-hisab",
+            arti: "Ya Tuhan kami, ampunilah aku, kedua orang tuaku, dan orang-orang beriman pada hari perhitungan."
+        },
+        {
+            judul: "Doa Memohon Petunjuk dan Rahmat (QS. Al-Kahfi: 10)",
+            arab: "رَبَّنَا آتِنَا مِنْ لَدُنْكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+            latin: "Rabbana atina min ladunka rahmatan wa hayyi' lana min amrina rasyada",
+            arti: "Ya Tuhan kami, berikanlah rahmat kepada kami dari sisi-Mu dan sempurnakanlah petunjuk yang lurus bagi kami dalam urusan kami."
+        },
+        {
+            judul: "Doa Memohon Kelapangan Dada (QS. Taha: 25)",
+            arab: "رَبِّ اشْرَحْ لِي صَدْرِي",
+            latin: "Rabbisyrah li shadri",
+            arti: "Ya Tuhanku, lapangkanlah dadaku."
+        },
+        {
+            judul: "Doa Memohon Kemudahan Urusan (QS. Taha: 26)",
+            arab: "وَيَسِّرْ لِي أَمْرِي",
+            latin: "Wa yassir li amri",
+            arti: "Dan mudahkanlah untukku urusanku."
+        },
+        {
+            judul: "Doa Memohon Tambahan Ilmu (QS. Taha: 114)",
+            arab: "رَبِّ زِدْنِي عِلْمًا",
+            latin: "Rabbi zidni 'ilma",
+            arti: "Ya Tuhanku, tambahkanlah ilmu kepadaku."
+        },
+        {
+            judul: "Doa Memohon Tempat yang Diberkahi (QS. Al-Mu'minun: 29)",
+            arab: "رَبِّ أَنْزِلْنِي مُنْزَلًا مُبَارَكًا وَأَنْتَ خَيْرُ الْمُنْزِلِينَ",
+            latin: "Rabbi anzilni munzalan mubarakan wa anta khairul-munzilin",
+            arti: "Ya Tuhanku, tempatkanlah aku di tempat yang diberkahi. Engkaulah sebaik-baik pemberi tempat."
+        },
+        {
+            judul: "Doa Memohon Perlindungan dari Godaan Setan (QS. Al-Mu'minun: 97)",
+            arab: "رَبِّ أَعُوذُ بِكَ مِنْ هَمَزَاتِ الشَّيَاطِينِ",
+            latin: "Rabbi a'udzu bika min hamazatisy-syayathin",
+            arti: "Ya Tuhanku, aku berlindung kepada-Mu dari bisikan dan godaan setan-setan."
+        },
+        {
+            judul: "Doa Memohon Perlindungan dari Kehadiran Setan (QS. Al-Mu'minun: 98)",
+            arab: "وَأَعُوذُ بِكَ رَبِّ أَنْ يَحْضُرُونِ",
+            latin: "Wa a'udzu bika rabbi an yahdhurun",
+            arti: "Dan aku berlindung kepada-Mu, ya Tuhanku, dari kedatangan mereka kepadaku."
+        },
+        {
+            judul: "Doa Memohon Perlindungan dari Neraka (QS. Al-Furqan: 65)",
+            arab: "رَبَّنَا اصْرِفْ عَنَّا عَذَابَ جَهَنَّمَ إِنَّ عَذَابَهَا كَانَ غَرَامًا",
+            latin: "Rabbanashrif 'anna 'adzaba jahannama inna 'adzabaha kana gharama",
+            arti: "Ya Tuhan kami, jauhkanlah azab Jahanam dari kami. Sesungguhnya azabnya adalah kebinasaan yang kekal."
+        },
+        {
+            judul: "Doa untuk Keluarga yang Menyejukkan Hati (QS. Al-Furqan: 74)",
+            arab: "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",
+            latin: "Rabbana hab lana min azwajina wa dzurriyyatina qurrata a'yunin waj'alna lil-muttaqina imama",
+            arti: "Ya Tuhan kami, anugerahkanlah kepada kami pasangan dan keturunan sebagai penyejuk hati, serta jadikanlah kami teladan bagi orang-orang bertakwa."
+        },
+        {
+            judul: "Doa Memohon Hikmah (QS. Asy-Syu'ara: 83)",
+            arab: "رَبِّ هَبْ لِي حُكْمًا وَأَلْحِقْنِي بِالصَّالِحِينَ",
+            latin: "Rabbi hab li hukman wa alhiqni bish-shalihin",
+            arti: "Ya Tuhanku, berikanlah kepadaku hikmah dan gabungkanlah aku dengan orang-orang saleh."
+        },
+        {
+            judul: "Doa Agar Pandai Bersyukur (QS. An-Naml: 19)",
+            arab: "رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَى وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ",
+            latin: "Rabbi awzi'ni an asykura ni'matakallati an'amta 'alayya wa 'ala walidayya wa an a'mala shalihan tardhah",
+            arti: "Ya Tuhanku, ilhamkanlah kepadaku untuk mensyukuri nikmat-Mu yang Engkau berikan kepadaku dan kedua orang tuaku, serta beramal saleh yang Engkau ridai."
+        },
+        {
+            judul: "Doa Memohon Ampunan atas Kesalahan (QS. Al-Qasas: 16)",
+            arab: "رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي",
+            latin: "Rabbi inni zhalamtu nafsi faghfir li",
+            arti: "Ya Tuhanku, sesungguhnya aku telah menzalimi diriku sendiri, maka ampunilah aku."
+        },
+        {
+            judul: "Doa Memohon Keselamatan (QS. Al-Qasas: 21)",
+            arab: "رَبِّ نَجِّنِي مِنَ الْقَوْمِ الظَّالِمِينَ",
+            latin: "Rabbi najjini minal-qaumizh-zhalimin",
+            arti: "Ya Tuhanku, selamatkanlah aku dari orang-orang zalim."
+        },
+        {
+            judul: "Doa Memohon Kebaikan (QS. Al-Qasas: 24)",
+            arab: "رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ",
+            latin: "Rabbi inni lima anzalta ilayya min khairin faqir",
+            arti: "Ya Tuhanku, sesungguhnya aku sangat memerlukan suatu kebaikan yang Engkau turunkan kepadaku."
+        },
+        {
+            judul: "Doa Memohon Keturunan Saleh (QS. As-Saffat: 100)",
+            arab: "رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ",
+            latin: "Rabbi hab li minash-shalihin",
+            arti: "Ya Tuhanku, anugerahkanlah kepadaku keturunan yang termasuk orang-orang saleh."
+        },
+        {
+            judul: "Doa Memohon Ampunan bagi Orang Beriman (QS. Ghafir: 7)",
+            arab: "رَبَّنَا وَسِعْتَ كُلَّ شَيْءٍ رَحْمَةً وَعِلْمًا فَاغْفِرْ لِلَّذِينَ تَابُوا وَاتَّبَعُوا سَبِيلَكَ",
+            latin: "Rabbana wasi'ta kulla syai'in rahmatan wa 'ilman faghfir lilladzina tabu wattaba'u sabilak",
+            arti: "Ya Tuhan kami, rahmat dan ilmu-Mu meliputi segala sesuatu. Ampunilah orang-orang yang bertobat dan mengikuti jalan-Mu."
+        },
+        {
+            judul: "Doa Memohon Surga bagi Orang Saleh (QS. Ghafir: 8)",
+            arab: "رَبَّنَا وَأَدْخِلْهُمْ جَنَّاتِ عَدْنٍ الَّتِي وَعَدْتَهُمْ",
+            latin: "Rabbana wa adkhilhum jannati 'adninillati wa'adtahum",
+            arti: "Ya Tuhan kami, masukkanlah mereka ke dalam surga 'Adn yang telah Engkau janjikan kepada mereka."
+        },
+        {
+            judul: "Doa Memohon Perlindungan dari Keburukan (QS. Ghafir: 9)",
+            arab: "وَقِهِمُ السَّيِّئَاتِ",
+            latin: "Wa qihimus-sayyi'at",
+            arti: "Dan lindungilah mereka dari keburukan."
+        },
+        {
+            judul: "Doa untuk Sesama Orang Beriman (QS. Al-Hasyr: 10)",
+            arab: "رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ",
+            latin: "Rabbanaghfir lana wa li-ikhwaninalladzina sabaquna bil-iman",
+            arti: "Ya Tuhan kami, ampunilah kami dan saudara-saudara kami yang telah beriman lebih dahulu daripada kami."
+        },
+        {
+            judul: "Doa Agar Hati Bersih dari Kedengkian (QS. Al-Hasyr: 10)",
+            arab: "رَبَّنَا لَا تَجْعَلْ فِي قُلُوبِنَا غِلًّا لِلَّذِينَ آمَنُوا",
+            latin: "Rabbana la taj'al fi qulubina ghillan lilladzina amanu",
+            arti: "Ya Tuhan kami, janganlah Engkau tanamkan kedengkian dalam hati kami terhadap orang-orang yang beriman."
+        },
+        {
+            judul: "Doa Meneladani Keteguhan Iman (QS. Al-Mumtahanah: 4)",
+            arab: "رَبَّنَا عَلَيْكَ تَوَكَّلْنَا وَإِلَيْكَ أَنَبْنَا وَإِلَيْكَ الْمَصِيرُ",
+            latin: "Rabbana 'alaika tawakkalna wa ilaika anabna wa ilaikal-mashir",
+            arti: "Ya Tuhan kami, hanya kepada-Mu kami bertawakal, kepada-Mu kami bertobat, dan kepada-Mulah tempat kembali."
+        },
+        {
+            judul: "Doa Memohon Ampunan dan Tidak Menjadi Fitnah (QS. Al-Mumtahanah: 5)",
+            arab: "رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِلَّذِينَ كَفَرُوا وَاغْفِرْ لَنَا رَبَّنَا",
+            latin: "Rabbana la taj'alna fitnatan lilladzina kafaru waghfir lana rabbana",
+            arti: "Ya Tuhan kami, janganlah Engkau jadikan kami sasaran fitnah bagi orang-orang kafir dan ampunilah kami, ya Tuhan kami."
+        },
+        {
+            judul: "Doa Memohon Kesempurnaan Cahaya dan Ampunan (QS. At-Tahrim: 8)",
+            arab: "رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+            latin: "Rabbana atmim lana nurana waghfir lana innaka 'ala kulli syai'in qadir",
+            arti: "Ya Tuhan kami, sempurnakanlah cahaya kami dan ampunilah kami. Sesungguhnya Engkau Mahakuasa atas segala sesuatu."
+        },
+        {
+            judul: "Doa Ampunan bagi Diri, Orang Tua, dan Orang Beriman (QS. Nuh: 28)",
+            arab: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَنْ دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ",
+            latin: "Rabbighfir li wa liwalidayya wa liman dakhala baytiya mu'minan wa lil-mu'minina wal-mu'minat",
+            arti: "Ya Tuhanku, ampunilah aku, kedua orang tuaku, orang yang memasuki rumahku dalam keadaan beriman, serta semua orang beriman laki-laki dan perempuan."
+        },
+        {
+            judul: "Doa Agar Hati Tetap Teguh dalam Petunjuk (QS. Ali 'Imran: 8)",
+            arab: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً إِنَّكَ أَنْتَ الْوَهَّابُ",
+            latin: "Rabbana la tuzigh qulubana ba'da idz hadaitana wa hab lana min ladunka rahmah innaka antal-wahhab",
+            arti: "Ya Tuhan kami, janganlah Engkau jadikan hati kami condong kepada kesesatan setelah Engkau beri petunjuk, dan karuniakanlah rahmat kepada kami."
+        },
+        {
+            judul: "Doa Memohon Ampunan dan Dijauhkan dari Neraka (QS. Ali 'Imran: 16)",
+            arab: "رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ النَّارِ",
+            latin: "Rabbana innanā amanna faghfir lana dzunubana wa qina 'adzaban-nar",
+            arti: "Ya Tuhan kami, sesungguhnya kami telah beriman. Ampunilah dosa-dosa kami dan lindungilah kami dari azab neraka."
+        },
+        {
+            judul: "Doa Memohon Pertolongan untuk Menegakkan Kebenaran (QS. Ali 'Imran: 147)",
+            arab: "رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَإِسْرَافَنَا فِي أَمْرِنَا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+            latin: "Rabbanaghfir lana dzunubana wa israfana fi amrina wa tsabbit aqdamana wanshurna 'alal-qaumil-kafirin",
+            arti: "Ya Tuhan kami, ampunilah dosa-dosa kami dan tindakan kami yang berlebihan, teguhkanlah pendirian kami, dan tolonglah kami."
+        },
+        {
+            judul: "Doa Memohon Ampunan dan Janji Allah (QS. Ali 'Imran: 193)",
+            arab: "رَبَّنَا فَاغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الْأَبْرَارِ",
+            latin: "Rabbana faghfir lana dzunubana wa kaffir 'anna sayyi'atina wa tawaffana ma'al-abrar",
+            arti: "Ya Tuhan kami, ampunilah dosa-dosa kami, hapuskanlah kesalahan-kesalahan kami, dan wafatkanlah kami bersama orang-orang yang berbakti."
+        }
+
+    
+    
+    ];
+
+    // ================= MOOD BOOSTER OTENTIK TANPA LABEL ANGKAN =================
+    const DB_MOOD = {
+        senang: [
+            "Alhamdulillah! Semangatmu nular nih. Doain temen-temen ya! ✨", 
+            "MasyaAllah, pertahankan mood ini sampe buka! 🔥", 
+            "Gaspol ibadahnya mumpung lagi happy! 🚀",
+            "Momen bahagia ini pas banget dipakai buat baca Al-Qur'an! 💡",
+            "Kebahagiaan hati adalah bentuk rasa syukur atas nikmat hari ini. 😊",
+            "Senang banget lihat kamu ceria hari ini! Jaga terus energi positifmu ya Nuriz. ✨",
+            "Keceriaanmu bisa jadi penyemangat buat keluarga di rumah. Pertahankan! 🌟",
+            "Mood bagus itu rezeki! Manfaatkan buat nambah pahala atau nulis ide seru. ✍️",
+            "Alhamdulillah, senyummu hari ini bernilai sedekah. Tetap bahagia ya! 😄",
+            "Hari yang indah dimulai dari hati yang penuh syukur dan rasa gembira. 🌸"
+        ],
+        ngantuk: [
+            "Ngantuk itu wajar. Cuci muka gih biar seger! 💧", 
+            "Tahan bestie! Tidur ibadah, tapi jangan kebablasan. 😴", 
+            "Kuatkan imanmu! Ngantuk ujian orang puasa. 💪",
+            "Tarik nafas dalam, hirup udara segar biar melek lagi! 🌿",
+            "Wudhu air dingin ampuh banget ngusir rasa ngantuk! 🚿",
+            "Semangat! Rasa kantuk yang kamu tahan demi ibadah insyaAllah dibalas pahala. ☕",
+            "Kalau ngantuk berat, rebahan santai sebentar asal jangan kelewatan waktu sholat ya. 🛌",
+            "Rasa ngantuk ini bukti fisikmu sedang beristirahat dari aktivitas berat. Santai sejenak! ⏳",
+            "Coba gerakkan badan atau jalan sebentar di dalam rumah biar aliran darah lancar. 🚶‍♂️",
+            "Ngantuk pas puasa itu wajar banget, tapi kamu pasti bisa melaluinya dengan baik! 👍"
+        ],
+        lapar: [
+            "Sabar... Sosis udah nungguin pas buka! 🌭", 
+            "Perut bunyi tandanya pahala ngalir. Tahan ya! ⏳", 
+            "Bayangin nasi anget... eh jangan, nanti batal! 😂",
+            "Lapar itu pengingat nikmat rizki yang sering kita lupa. 🤲",
+            "Tinggal beberapa jam lagi kok, alihkan ke hobi dulu! 🎮",
+            "Sabar ya Nuriz, menahan lapar adalah perisai diri yang sangat mulia. 🛡️",
+            "Perut lapar mengajarkan kita empati kepada sesama. Tetap kuat ya! ❤️",
+            "Bayangkan kenikmatan tegukan air pertama saat adzan maghrib nanti. Dikit lagi! 🥤",
+            "Fokus ke hal-hal seru seperti koding atau baca novel biar laparnya nggak terasa. 💻",
+            "Rasa lapar ini adalah bukti nyata perjuanganmu menahan diri seharian. Bangga! 🏆"
+        ],
+        bosan: [
+            "Gabut? Lanjutin nulis NO LEADER dikit. ✍️", 
+            "Dzikir atau baca 1 halaman Quran aja. 📖", 
+            "Cek kodingan game tenis kamu, siapa tau ada bug! 💻",
+            "Coba bantu Emak disiapin meja makan buat buka nanti! 🍽️",
+            "Dengarkan murottal sebentar biar pikiran jadi adem. 🎧",
+            "Yuk alihkan rasa bosan ini ke hal produktif atau baca buku kesukaanmu. 📚",
+            "Bosan itu tanda otak butuh variasi kegiatan. Coba hal baru yang bermanfaat! 💡",
+            "Daripada gabut melamun, yuk rapikan kamar atau meja belajar biar makin rapi. 🧹",
+            "Luangkan waktu sebentar buat menyapa atau kirim pesan hangat ke teman. 💬",
+            "Rasa bosan hilang seketika saat kita mulai fokus mengingat nikmat-Nya. ✨"
+        ]
+    };
+
+    const MENU_DEFAULT = ["Nasi + Sosis Bakar", "Nasi + Telur Ceplok", "Nasi + Ayam Goreng", "Nasi + Nugget", "Nasi + Rendang", "Nasi + Abon", "Nasi + Tahu Walik"];
+
+    let app = {
+        jajan: [], userMenus: [],
+        sahur: "03:30", buka: "17:50", tarawih: "19:00", selesai: "20:00",
+        isDiet: false, isAdaptif: true
+    };
+
+    window.onload = () => {
+        const saved = localStorage.getItem('ramadhanUltraFix2027');
+        if(saved) app = JSON.parse(saved);
+        if(!app.userMenus) app.userMenus = [];
+        if(!app.selesai) app.selesai = "20:00";
+
+        document.getElementById('toggle-diet').checked = app.isDiet;
+        document.getElementById('toggle-adaptif').checked = app.isAdaptif;
+
+        renderJajan(); renderMenuUser(); updateUI(); applyDietTheme();
+        setInterval(updateClock, 1000); updateClock();
+    }
+
+    function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function showRes(id, text) {
+        const el = document.getElementById(id);
+        el.style.display = 'block'; el.innerHTML = text;
+    }
+
+    window.genMood = (t) => showRes('res-mood', pickRandom(DB_MOOD[t]));
+    window.genDoaAcak = () => {
+        const d = pickRandom(DOA_DB);
+        showRes('res-doa', `<b>${d.judul}</b><br><br><div style="font-size:16px; font-weight:bold; text-align:right; margin-bottom:4px; line-height:1.4;">${d.arab}</div><div style="font-size:12px; font-weight:600; color:#2e7d32; margin-bottom:6px; font-style:italic;">Latin: ${d.latin}</div><div style="font-style:italic;">"${d.arti}"</div>`);
+    }
+    window.genTadarus = (v) => v ? showRes('res-tadarus', `Surah/Ayat: <b>${v}</b><br><span style="font-size:12px; color:#1565c0; font-style:italic;">Bacaan mu sudah tercatat. MasyaAllah, semoga jadi cahaya penyejuk kubur nanti. Aamiin. ✨</span>`) : null;
+    
+    window.cekGizi = (v) => {
+        if(!v) return;
+        const safe = v.toLowerCase().match(/nasi|telur|sosis|ayam|daging|ikan|tahu|mie/);
+        showRes('res-gizi', `Menu: <b>${v}</b><br>${safe ? "Mantap! Protein dapet, kenyang dapet. Gaspol! 🔥" : "Waduh, pastikan nutrisi dan protein cukup biar kuat berpuasa! 💪"}`);
+    }
+
+    window.genRefleksi = () => {
+        const quote = pickRandom(REFLEKSI_DB);
+        showRes('res-refleksi', `<b>Refleksi Malam Ini:</b><br><br>${quote}`);
+    }
+
+    window.tambahMenu = () => {
+        const val = document.getElementById('menuBaru').value.trim();
+        if(val) { app.userMenus.push(val); save(); renderMenuUser(); document.getElementById('menuBaru').value=""; }
+    }
+    window.renderMenuUser = () => {
+        document.getElementById('daftarMenuUser').innerHTML = app.userMenus.map(m => `<span class="chip">${m} + Nasi</span>`).join('');
+    }
+
+    window.genSaranSahur = () => {
+        if(app.isDiet) {
+            const jenisNasi = confirm("Mau pakai Nasi Porang (Rendah Kalori)? Klik OK untuk Porang, Cancel untuk Nasi Biasa.") ? "Nasi Porang (Maks 200g)" : "Nasi Biasa (Maks 200g)";
+            const menuDiet = pickRandom(["Tahu Bakso Air Fryer", "Mie Porang Sehat", "Tahu Susu Air Fryer", "Sosis Goreng Rendah Garam"]);
+            showRes('res-saran', `🌱 <b>Saran Sahur Mode Diet (Tanpa Sayur):</b><br>• ${jenisNasi}<br>• ${menuDiet} 🍽️<br><br>📊 <b>Estimasi Terkontrol:</b><br>• Kalori: ~320 kcal<br>• Natrium: Rendah (Terhindar dari Dehidrasi)`);
+        } else {
+            const chosen = pickRandom([...MENU_DEFAULT, ...app.userMenus]);
+            showRes('res-saran', `🍽️ <b>Menu Rekomendasi Sahur:</b><br><b>${chosen}</b><br><small>Wajib pakai nasi hangat!</small>`);
+        }
+    }
+
+    window.addJajan = () => {
+        const input = document.getElementById('jajanInput');
+        const v = input.value.trim();
+        if(!v) return;
+
+        if(app.isDiet && app.jajan.length >= 2) {
+            alert("⚠️ Eitss, kan lagi Mode Diet! Maksimal 2 takjil aja ya biar tetep terkontrol! 😉");
+            input.value = "";
+            return;
+        }
+
+        app.jajan.push({t:v, d:false}); 
+        save(); renderJajan(); input.value="";
+    }
+
+    window.renderJajan = () => {
+        document.getElementById('jajanList').innerHTML = app.jajan.map((x,i) => 
+            `<div class="list-item"><input type="checkbox" class="chk" onclick="tog(${i})" ${x.d?'checked':''}><span class="item-text ${x.d?'done':''}">${x.t}</span><i class="fas fa-trash del-btn" onclick="del(${i})"></i></div>`
+        ).join('');
+    }
+    window.tog = (i) => { app.jajan[i].d = !app.jajan[i].d; save(); renderJajan(); }
+    window.del = (i) => { app.jajan.splice(i,1); save(); renderJajan(); }
+    
+    window.save = () => localStorage.setItem('ramadhanUltraFix2027', JSON.stringify(app));
+    
+    window.saveJadwal = () => {
+        app.sahur = document.getElementById('set-sahur').value;
+        app.buka = document.getElementById('set-buka').value;
+        app.tarawih = document.getElementById('set-tarawih').value;
+        app.selesai = document.getElementById('set-selesai').value;
+        save(); updateUI(); document.getElementById('modal').style.display='none';
+    }
+
+    window.updateUI = () => {
+        document.getElementById('d-sahur').innerText = app.sahur;
+        document.getElementById('d-buka').innerText = app.buka + (app.isDiet ? " (Saran Air Kelapa 🥥)" : "");
+        document.getElementById('d-tarawih').innerText = app.tarawih;
+        document.getElementById('d-selesai').innerText = app.selesai;
+        
+        document.getElementById('set-sahur').value = app.sahur;
+        document.getElementById('set-buka').value = app.buka;
+        document.getElementById('set-tarawih').value = app.tarawih;
+        document.getElementById('set-selesai').value = app.selesai;
+        
+        document.getElementById('lbl-selesai-tarawih').innerText = app.selesai;
+    }
+
+    window.switchTab = (t, e) => {
+        document.getElementById('tab-kegiatan').classList.add('hidden');
+        document.getElementById('tab-ibadah').classList.add('hidden');
+        document.getElementById('tab-' + t).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+        e.classList.add('active');
+    }
+
+    window.toggleDietMode = () => {
+        app.isDiet = document.getElementById('toggle-diet').checked;
+        if(app.isDiet) {
+            app.isAdaptif = false;
+            document.getElementById('toggle-adaptif').checked = false;
+        }
+        save(); applyDietTheme(); updateUI();
+    }
+
+    window.toggleAdaptifMode = () => {
+        app.isAdaptif = document.getElementById('toggle-adaptif').checked;
+        if(app.isAdaptif) {
+            app.isDiet = false;
+            document.getElementById('toggle-diet').checked = false;
+        }
+        save(); applyDietTheme(); updateUI();
+    }
+
+    window.applyDietTheme = () => {
+        const root = document.documentElement;
+        if(app.isDiet) {
+            root.style.setProperty('--primary', '#2e7d32');
+            document.getElementById('main-header').style.background = 'linear-gradient(135deg, #2e7d32, #1b5e20)';
+        } else if(!app.isAdaptif) {
+            root.style.setProperty('--primary', '#2979ff');
+            document.getElementById('main-header').style.background = 'linear-gradient(135deg, #2979ff, #1565c0)';
+        }
+    }
+
+    window.updateClock = () => {
+        const d = new Date();
+        const h = String(d.getHours()).padStart(2, '0');
+        const m = String(d.getMinutes()).padStart(2, '0');
+        const currentTime = `${h}:${m}`;
+        
+        document.getElementById('clock').innerText = `${h}.${m}`;
+        document.getElementById('date').innerText = d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'short'});
+
+        if(app.isAdaptif && !app.isDiet) {
+            const hour = d.getHours();
+            const header = document.getElementById('main-header');
+            const root = document.documentElement;
+
+            if (hour >= 3 && hour < 5) {
+                header.style.background = 'linear-gradient(135deg, #1a237e, #0d47a1)';
+                root.style.setProperty('--primary', '#3f51b5');
+            } else if (hour >= 5 && hour < 15) {
+                header.style.background = 'linear-gradient(135deg, #2979ff, #1565c0)';
+                root.style.setProperty('--primary', '#2979ff');
+            } else if (hour >= 15 && hour < 18.5) {
+                header.style.background = 'linear-gradient(135deg, #f57c00, #e65100)';
+                root.style.setProperty('--primary', '#f57c00');
+            } else {
+                header.style.background = 'linear-gradient(135deg, #4a148c, #311b92)';
+                root.style.setProperty('--primary', '#7e57c2');
+            }
+        }
+
+        if (currentTime >= app.selesai) {
+            document.getElementById('refleksi-locked').style.display = 'none';
+            document.getElementById('btn-refleksi').style.display = 'block';
+        } else {
+            document.getElementById('refleksi-locked').style.display = 'block';
+            document.getElementById('btn-refleksi').style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
+
+
+
+
